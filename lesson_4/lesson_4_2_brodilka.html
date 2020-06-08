@@ -1,0 +1,137 @@
+<!-- Задание 2*. Для игры бродилка, добавить возможность ходить по диагонали цифрами 1, 3, 7, 9.
+Также необходимо сделать так, чтобы пользователь не мог совершить шаг в стенку, т.е. при направлении в стенку и игрок оставался на том же месте где стоял.
+ -->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Бродилка</title>
+</head>
+<body>
+  <script>
+    "use strict";
+
+
+    const settings = {
+      rowsCount: 10,
+      colsCount: 10,
+      startPositionX: 0,
+      startPositionY: 0,
+    };
+
+    const player = {
+      x: null,
+      y: null,
+
+  
+      init(startX, startY) {
+        this.x = startX;
+        this.y = startY;
+      },
+
+      move(direction) {
+        switch (direction) {
+          case '8':
+            this.y--;
+            break;
+          case '4':
+            this.x--;
+            break;
+          case '2':
+            this.y++;
+            break;
+          case '6':
+            this.x++;
+            break;
+          case '7':
+            this.x--;
+            this.y--;
+            break;
+          case '9':
+            this.x++;
+            this.y--;
+            break;
+          case '1':
+            this.x--;
+            this.y++;
+            break;
+          case '3':
+            this.x++;
+            this.y++;
+            break;
+        }
+      },
+    };
+
+
+    const game = {
+      settings,
+      player,
+
+      run() {
+        this.player.init(this.settings.startPositionX, this.settings.startPositionY);
+        while (true) {
+          this.render();
+
+          const direction = this.getDirection();
+          if (direction === '0') {
+            alert('GAME OVER');
+            return;
+          } else if (this.isPlayerCanGo(direction)) {
+            this.player.move(direction);
+          }
+        }
+      },
+
+
+      render() {
+        let map = "";
+        for (let row = 0; row < this.settings.rowsCount; row++) {
+          // В каждой строке отображаем для каждой колонки (x - клетка, o - игрок).
+          for (let col = 0; col < this.settings.colsCount; col++) {
+            // Проверяем, если на данной позиции должен быть и игрок, отображаем игрока, если нет - клетку.
+            if (this.player.y === row && this.player.x === col) {
+              map += '@ ';
+            } else {
+              map += 'x ';
+            }
+          }
+          map += '\n';
+        }
+
+        console.clear();
+        console.log(map);
+      },
+
+      getDirection() {
+        const availableDirections = ['8', '4', '2', '6', '9', '3', '1', '7', '0'];
+
+        while (true) {
+          const direction = (prompt('Введите 8, 4, 2, 6, 9, 3, 1, 7  для перемещения, 0 для выхода.'));
+          if (!availableDirections.includes(direction)) {
+            alert(`Для перемещения необходимо ввести одну из команд: ${availableDirections.join(', ')}.`);
+            continue;
+          }
+
+          return direction;
+        }
+      },
+
+      isPlayerCanGo(direction) {
+        let copyPlayer = Object.assign({}, this.player);
+        copyPlayer.move(direction);
+        if (
+          (copyPlayer.x > this.settings.colsCount - 1 || copyPlayer.x < 0) ||
+          (copyPlayer.y > this.settings.rowsCount - 1 || copyPlayer.y < 0)
+        ) {
+            return false;
+        }
+        return true;
+      },
+    };
+
+    game.run();
+  </script>
+</body>
+</html>
